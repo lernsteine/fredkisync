@@ -22,85 +22,61 @@
  */
 
 import Ajax from 'core/ajax';
-import {getString} from 'core/str';
 
 /**
  * Initialise the knowledge-base selector.
  *
- * @param {Object} config Element IDs and course context.
+ * The click handler is delegated to the document, so it also works if the
+ * form is re-rendered. All texts are passed in from PHP, so no further string
+ * requests are needed before the user sees feedback.
+ *
+ * @param {Object} config Element IDs, course ID and texts.
  */
 export const init = (config) => {
-    const button = document.getElementById(config.buttonId);
-    const status = document.getElementById(config.statusId);
-    const select = document.getElementById(config.selectId);
-    const knowledgeId = document.getElementById(config.knowledgeId);
-    const username = document.getElementById(config.usernameId);
-    const password = document.getElementById(config.passwordId);
-    const workspace = document.getElementById(config.workspaceId);
-    const selectedName = document.getElementById(config.nameId);
+    const byId = (id) => (id ? document.getElementById(id) : null);
+    const texts = config.strings || {};
 
-    if (!button || !select) {
-        return;
-    }
-
-    const setStatus = (message, className = '') => {
+    const setStatus = (message, type) => {
+        const status = byId(config.statusId);
         if (status) {
-            status.className = className;
+            status.className = 'mt-2 alert alert-' + type;
             status.textContent = message;
         }
     };
 
-    const reset = async() => {
-        while (select.firstChild) {
-            select.removeChild(select.firstChild);
-        }
-        const option = document.createElement('option');
-        option.value = '';
-        option.textContent = await getString('chooseknowledgebase', 'mod_fredkisync');
-        select.append(option);
-        if (knowledgeId) {
-            knowledgeId.value = '';
-        }
-        if (selectedName) {
-            selectedName.value = '';
-        }
-    };
-
-    const updateHiddenField = (field, value) => {
-        if (!field) {
-            return;
-        }
-        field.value = value;
-        field.dispatchEvent(new Event('input', {bubbles: true}));
-        field.dispatchEvent(new Event('change', {bubbles: true}));
-    };
+    const getSelect = () => byId(config.selectId) || document.querySelector('select[name="knowledgeid"]');
+    const getNameField = () => byId(config.nameId) || document.querySelector('input[name="knowledgebasename"]');
 
     const syncSelection = () => {
+        const select = getSelect();
+        const nameField = getNameField();
+        if (!select || !nameField) {
+            return;
+        }
         const option = select.options[select.selectedIndex];
-        const value = option && option.value ? option.value : '';
-        updateHiddenField(knowledgeId, value);
-        updateHiddenField(selectedName, value && option ? option.textContent.trim() : '');
+        nameField.value = option && option.value ? option.textContent.trim() : '';
     };
 
-    select.addEventListener('change', syncSelection);
-    const form = select.closest('form');
-    if (form) {
-        form.addEventListener('submit', syncSelection);
-    }
+    const load = async(button) => {
+        const select = getSelect();
+        const username = byId(config.usernameId) || document.querySelector('input[name="fredkiusername"]');
+        const password = byId(config.passwordId) || document.querySelector('input[name="fredkipassword"]');
+        const workspace = byId(config.workspaceId) || document.querySelector('input[name="workspace"]');
+        const userValue = username ? username.value.trim() : '';
+        const passwordValue = password ? password.value : '';
 
-    button.addEventListener('click', async() => {
-        const previousValue = knowledgeId?.value || select.value || '';
-        const userValue = username?.value.trim() ?? '';
-        const passwordValue = password?.value ?? '';
         if (!userValue || !passwordValue) {
-            setStatus(await getString('entercredentials', 'mod_fredkisync'), 'alert alert-warning');
+            setStatus(texts.entercredentials, 'warning');
+            return;
+        }
+        if (!select) {
+            setStatus(texts.loadfailed, 'danger');
             return;
         }
 
+        const previousValue = select.value;
         button.disabled = true;
-        await reset();
-        setStatus(await getString('loadingknowledgebases', 'mod_fredkisync'), 'alert alert-info');
-
+        setStatus(texts.loading, 'info');
         try {
             const response = await Ajax.call([{
                 methodname: 'mod_fredkisync_get_knowledgebases',
@@ -108,31 +84,45 @@ export const init = (config) => {
                     courseid: config.courseId,
                     username: userValue,
                     password: passwordValue,
-                    workspace: workspace?.value || 'default',
+                    workspace: (workspace && workspace.value) || 'default',
                 },
             }])[0];
-
             const items = Array.isArray(response.items) ? response.items : [];
-            items.forEach((item) => {
-                const option = document.createElement('option');
-                option.value = item.id;
-                option.textContent = item.name;
-                select.append(option);
-            });
+
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+            select.add(new Option(texts.choose, ''));
+            items.forEach((item) => select.add(new Option(item.name, item.id)));
             if (previousValue && items.some((item) => String(item.id) === String(previousValue))) {
                 select.value = previousValue;
-                syncSelection();
             }
+            syncSelection();
+
             if (items.length === 0) {
-                setStatus(await getString('noknowledgebases', 'mod_fredkisync'), 'alert alert-warning');
-                return;
+                setStatus(texts.none, 'warning');
+            } else {
+                setStatus(String(texts.loaded).replace('{$a}', items.length), 'success');
             }
-            const message = await getString('knowledgebasesloaded', 'mod_fredkisync', items.length);
-            setStatus(message, 'alert alert-success');
         } catch (error) {
-            setStatus(await getString('knowledgebasesloadfailed', 'mod_fredkisync'), 'alert alert-danger');
+            const detail = error && (error.message || error.error) ? ' (' + (error.message || error.error) + ')' : '';
+            setStatus(texts.loadfailed + detail, 'danger');
         } finally {
             button.disabled = false;
         }
+    };
+
+    document.addEventListener('click', (e) => {
+        const button = e.target.closest('#' + config.buttonId);
+        if (button) {
+            e.preventDefault();
+            load(button);
+        }
     });
+    document.addEventListener('change', (e) => {
+        if (e.target.matches('select[name="knowledgeid"]')) {
+            syncSelection();
+        }
+    });
+    document.addEventListener('submit', syncSelection, true);
 };

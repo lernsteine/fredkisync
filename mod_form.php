@@ -122,6 +122,14 @@ class mod_fredkisync_mod_form extends moodleform_mod {
                 'passwordId' => 'id_fredkipassword',
                 'workspaceId' => 'id_workspace',
                 'nameId' => 'id_knowledgebasename',
+                'strings' => [
+                    'entercredentials' => get_string('entercredentials', 'mod_fredkisync'),
+                    'loading' => get_string('loadingknowledgebases', 'mod_fredkisync'),
+                    'loaded' => get_string('knowledgebasesloaded', 'mod_fredkisync', '{$a}'),
+                    'none' => get_string('noknowledgebases', 'mod_fredkisync'),
+                    'loadfailed' => get_string('knowledgebasesloadfailed', 'mod_fredkisync'),
+                    'choose' => get_string('chooseknowledgebase', 'mod_fredkisync'),
+                ],
             ]]);
         }
 

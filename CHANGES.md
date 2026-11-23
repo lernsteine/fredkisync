@@ -1,5 +1,10 @@
 # Changes
 
+## 1.2.1 (2026-11-23)
+
+- Fixed: the "Load knowledge bases" button did not react. The JavaScript module is now registered under its name, the click handler is robust against re-rendered forms, and all texts are passed in directly.
+- Error messages from the FredKI® service are now shown next to the button.
+
 ## 1.2.0 (2026-11-23)
 
 - First Moodle Plugins directory release (stable).
