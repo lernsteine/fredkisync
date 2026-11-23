@@ -15,3 +15,100 @@
     background-color: #f7f9fb;
     color: #334155;
 }
+
+.fredki-kb-picker {
+    margin-top: 0.5rem;
+}
+
+.fredki-kb-selected-text {
+    font-size: 1rem;
+    margin: 0.5rem 0 1rem;
+}
+
+.fredki-kb-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.fredki-kb-card {
+    position: relative;
+    width: 100%;
+    min-height: 112px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid #d5e0ef;
+    border-radius: 0.85rem;
+    background: #fff;
+    padding: 1rem 4.25rem 1rem 1.25rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.fredki-kb-card:hover,
+.fredki-kb-card:focus {
+    border-color: #9db9d8;
+    box-shadow: 0 0 0 0.2rem rgba(15, 108, 191, 0.08);
+}
+
+.fredki-kb-card.is-selected {
+    background: #eef8f0;
+    border-color: #5aa06a;
+}
+
+.fredki-kb-avatar {
+    flex: 0 0 auto;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2f7;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.fredki-kb-body {
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.fredki-kb-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    color: #111827;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.fredki-kb-subtitle {
+    color: #6b7280;
+}
+
+.fredki-kb-action {
+    margin-top: 0.3rem;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #0f6cbf;
+}
+
+.fredki-kb-brand {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #9aa7b8;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 768px) {
+    .fredki-kb-grid {
+        grid-template-columns: 1fr;
+    }
+}

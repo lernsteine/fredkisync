@@ -1,4 +1,4 @@
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,118 +11,203 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Loads the FredKI® knowledge bases into the activity settings form.
+ * Knowledge base picker of the FredKI® Sync activity settings form.
  *
  * @module     mod_fredkisync/knowledgebases
- * @copyright  2026 Ralf Hagemeister, LERNSTEINE <https://lernsteine.com>
- * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2026 lernsteine.com
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-import Ajax from 'core/ajax';
 
 /**
- * Initialise the knowledge-base selector.
+ * Initialise the knowledge base picker.
  *
- * The click handler is delegated to the document, so it also works if the
- * form is re-rendered. All texts are passed in from PHP, so no further string
- * requests are needed before the user sees feedback.
- *
- * @param {Object} config Element IDs, course ID and texts.
+ * @param {Object} config Element ids, endpoint and language strings passed from PHP.
  */
 export const init = (config) => {
-    const byId = (id) => (id ? document.getElementById(id) : null);
-    const texts = config.strings || {};
+    const button = document.getElementById(config.buttonId);
+    if (!button) {
+        return;
+    }
 
-    const setStatus = (message, type) => {
-        const status = byId(config.statusId);
-        if (status) {
-            status.className = 'mt-2 alert alert-' + type;
-            status.textContent = message;
+    const statusNode = document.getElementById(config.statusId);
+    const selectNode = document.getElementById(config.knowledgeFieldId);
+    const nameNode = document.getElementById('id_knowledgebasename');
+    const selectedNode = document.getElementById('fredki-knowledgebase-selected');
+    const cardsNode = document.getElementById('fredki-knowledgebase-cards');
+    const usernameNode = document.getElementById(config.usernameId);
+    const passwordNode = document.getElementById(config.passwordId);
+    const workspaceNode = document.getElementById(config.workspaceId);
+
+    const selectRow = selectNode ? selectNode.closest('.fitem, .form-group, .mb-3') : null;
+    if (selectRow) {
+        selectRow.style.display = 'none';
+    }
+
+    const setStatus = (message, cssclass) => {
+        if (!statusNode) {
+            return;
+        }
+        statusNode.className = cssclass || '';
+        statusNode.textContent = message || '';
+    };
+
+    const getInitial = (name) => {
+        const trimmed = (name || '').trim();
+        return trimmed ? trimmed.charAt(0).toUpperCase() : '?';
+    };
+
+    const updateSelectedText = (name) => {
+        if (!selectedNode) {
+            return;
+        }
+        if (name) {
+            selectedNode.textContent = config.strings.selectedPrefix + ' ';
+            const strong = document.createElement('strong');
+            strong.textContent = name;
+            selectedNode.appendChild(strong);
+        } else {
+            selectedNode.textContent = config.strings.none;
         }
     };
 
-    const getSelect = () => byId(config.selectId) || document.querySelector('select[name="knowledgeid"]');
-    const getNameField = () => byId(config.nameId) || document.querySelector('input[name="knowledgebasename"]');
-
-    const syncSelection = () => {
-        const select = getSelect();
-        const nameField = getNameField();
-        if (!select || !nameField) {
+    const syncNameFromSelect = () => {
+        if (!selectNode || !nameNode) {
             return;
         }
-        const option = select.options[select.selectedIndex];
-        nameField.value = option && option.value ? option.textContent.trim() : '';
+        const selected = selectNode.options[selectNode.selectedIndex];
+        const name = selected && selected.value ? selected.textContent : '';
+        nameNode.value = name;
+        updateSelectedText(name);
     };
 
-    const load = async(button) => {
-        const select = getSelect();
-        const username = byId(config.usernameId) || document.querySelector('input[name="fredkiusername"]');
-        const password = byId(config.passwordId) || document.querySelector('input[name="fredkipassword"]');
-        const workspace = byId(config.workspaceId) || document.querySelector('input[name="workspace"]');
-        const userValue = username ? username.value.trim() : '';
-        const passwordValue = password ? password.value : '';
-
-        if (!userValue || !passwordValue) {
-            setStatus(texts.entercredentials, 'warning');
+    const renderCards = () => {
+        if (!selectNode || !cardsNode) {
             return;
         }
-        if (!select) {
-            setStatus(texts.loadfailed, 'danger');
+        cardsNode.innerHTML = '';
+        Array.from(selectNode.options).forEach((option) => {
+            if (!option.value) {
+                return;
+            }
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = 'fredki-kb-card' + (option.selected ? ' is-selected' : '');
+
+            const avatar = document.createElement('span');
+            avatar.className = 'fredki-kb-avatar';
+            avatar.textContent = getInitial(option.textContent);
+
+            const body = document.createElement('span');
+            body.className = 'fredki-kb-body';
+
+            const title = document.createElement('span');
+            title.className = 'fredki-kb-title';
+            title.textContent = option.textContent;
+
+            const subtitle = document.createElement('span');
+            subtitle.className = 'fredki-kb-subtitle';
+            subtitle.textContent = config.strings.subtitle;
+
+            const action = document.createElement('span');
+            action.className = 'fredki-kb-action';
+            action.textContent = option.selected ? config.strings.selectedButton : config.strings.chooseButton;
+
+            const brand = document.createElement('span');
+            brand.className = 'fredki-kb-brand';
+            brand.textContent = 'FredKI';
+
+            body.appendChild(title);
+            body.appendChild(subtitle);
+            body.appendChild(action);
+            card.appendChild(avatar);
+            card.appendChild(body);
+            card.appendChild(brand);
+            card.addEventListener('click', () => {
+                selectNode.value = option.value;
+                syncNameFromSelect();
+                renderCards();
+            });
+            cardsNode.appendChild(card);
+        });
+    };
+
+    const resetOptions = () => {
+        if (!selectNode) {
+            return;
+        }
+        selectNode.innerHTML = '';
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = config.strings.choose;
+        selectNode.appendChild(option);
+        syncNameFromSelect();
+        renderCards();
+    };
+
+    if (selectNode) {
+        selectNode.addEventListener('change', () => {
+            syncNameFromSelect();
+            renderCards();
+        });
+    }
+    syncNameFromSelect();
+    renderCards();
+
+    button.addEventListener('click', async() => {
+        const username = usernameNode ? usernameNode.value.trim() : '';
+        const password = passwordNode ? passwordNode.value : '';
+        const workspace = workspaceNode && workspaceNode.value ? workspaceNode.value : 'default';
+        const usesavedNode = document.getElementById('id_fredkiusesaved');
+        const usesaved = !!(usesavedNode && usesavedNode.checked);
+
+        if (!usesaved && (!username || !password)) {
+            setStatus(config.strings.enterCredentials, 'alert alert-warning');
             return;
         }
 
-        const previousValue = select.value;
         button.disabled = true;
-        setStatus(texts.loading, 'info');
+        resetOptions();
+        setStatus(config.strings.loading, 'alert alert-info');
+
         try {
-            const response = await Ajax.call([{
-                methodname: 'mod_fredkisync_get_knowledgebases',
-                args: {
-                    courseid: config.courseId,
-                    username: userValue,
-                    password: passwordValue,
-                    workspace: (workspace && workspace.value) || 'default',
+            const response = await fetch(config.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 },
-            }])[0];
-            const items = Array.isArray(response.items) ? response.items : [];
+                body: new URLSearchParams({
+                    sesskey: config.sesskey,
+                    courseid: String(config.courseId),
+                    username: username,
+                    password: password,
+                    usesaved: usesaved ? '1' : '0',
+                    workspace: workspace,
+                }),
+            });
 
-            while (select.options.length > 0) {
-                select.remove(0);
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || config.strings.loadError);
             }
-            select.add(new Option(texts.choose, ''));
-            items.forEach((item) => select.add(new Option(item.name, item.id)));
-            if (previousValue && items.some((item) => String(item.id) === String(previousValue))) {
-                select.value = previousValue;
-            }
-            syncSelection();
 
-            if (items.length === 0) {
-                setStatus(texts.none, 'warning');
-            } else {
-                setStatus(String(texts.loaded).replace('{$a}', items.length), 'success');
-            }
+            resetOptions();
+            (data.items || []).forEach((item) => {
+                const option = document.createElement('option');
+                option.value = String(item.id || '');
+                option.textContent = String(item.name || item.id || '');
+                if (option.value) {
+                    selectNode.appendChild(option);
+                }
+            });
+            renderCards();
+            setStatus((data.items || []).length + ' ' + config.strings.loadedSuffix, 'alert alert-success');
         } catch (error) {
-            const detail = error && (error.message || error.error) ? ' (' + (error.message || error.error) + ')' : '';
-            setStatus(texts.loadfailed + detail, 'danger');
+            setStatus(error.message || config.strings.loadError, 'alert alert-danger');
         } finally {
             button.disabled = false;
         }
-    };
-
-    document.addEventListener('click', (e) => {
-        const button = e.target.closest('#' + config.buttonId);
-        if (button) {
-            e.preventDefault();
-            load(button);
-        }
     });
-    document.addEventListener('change', (e) => {
-        if (e.target.matches('select[name="knowledgeid"]')) {
-            syncSelection();
-        }
-    });
-    document.addEventListener('submit', syncSelection, true);
 };

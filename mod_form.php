@@ -92,13 +92,15 @@ class mod_fredkisync_mod_form extends moodleform_mod {
             $mform->addElement('html', html_writer::div(
                 html_writer::tag('button', get_string('loadknowledgebases', 'mod_fredkisync'), [
                     'type' => 'button',
-                    'class' => 'btn btn-primary',
+                    'class' => 'btn btn-primary w-100',
                     'id' => $buttonid,
-                ]) . html_writer::div('', 'mt-2', ['id' => $statusid]),
+                    'style' => 'width:100%;',
+                ]) .
+                html_writer::div('', 'mt-2', ['id' => $statusid]),
                 'mb-3'
             ));
 
-            // The AJAX endpoint stores the returned list in the Moodle session. On the
+            // The knowledge-base endpoint stores the returned list in the Moodle session. On the
             // subsequent form submission these options are therefore already known to
             // MoodleQuickForm and the submitted value passes select validation.
             global $SESSION;
@@ -107,28 +109,50 @@ class mod_fredkisync_mod_form extends moodleform_mod {
             foreach ($sessionitems as $knowledgeid => $knowledgename) {
                 $knowledgeoptions[(string)$knowledgeid] = (string)$knowledgename;
             }
-            $mform->addElement('select', 'knowledgeid',
-                get_string('availableknowledgebases', 'mod_fredkisync'), $knowledgeoptions);
+
+            // The real select element stays in the form. It is only hidden visually and kept
+            // in sync with the cards, so Moodle accepts the saved value.
+            $mform->addElement(
+                'select',
+                'knowledgeid',
+                get_string('availableknowledgebases', 'mod_fredkisync'),
+                $knowledgeoptions
+            );
             $mform->setType('knowledgeid', PARAM_TEXT);
             $mform->addElement('hidden', 'knowledgebasename', '');
             $mform->setType('knowledgebasename', PARAM_TEXT);
 
+            $mform->addElement('html', html_writer::div(
+                html_writer::div(
+                    get_string('noknowledgebasechosen', 'mod_fredkisync'),
+                    'fredki-kb-selected-text',
+                    ['id' => 'fredki-knowledgebase-selected']
+                ) .
+                html_writer::div('', 'fredki-kb-grid', ['id' => 'fredki-knowledgebase-cards']),
+                'fredki-kb-picker mb-3'
+            ));
+
             $PAGE->requires->js_call_amd('mod_fredkisync/knowledgebases', 'init', [[
-                'courseId' => (int)$this->_course->id,
                 'buttonId' => $buttonid,
                 'statusId' => $statusid,
-                'selectId' => 'id_knowledgeid',
+                'knowledgeFieldId' => 'id_knowledgeid',
                 'usernameId' => 'id_fredkiusername',
                 'passwordId' => 'id_fredkipassword',
                 'workspaceId' => 'id_workspace',
-                'nameId' => 'id_knowledgebasename',
+                'endpoint' => (new moodle_url('/mod/fredkisync/knowledgebases.php'))->out(false),
+                'sesskey' => sesskey(),
+                'courseId' => (int)$this->_course->id,
                 'strings' => [
-                    'entercredentials' => get_string('entercredentials', 'mod_fredkisync'),
-                    'loading' => get_string('loadingknowledgebases', 'mod_fredkisync'),
-                    'loaded' => get_string('knowledgebasesloaded', 'mod_fredkisync', '{$a}'),
-                    'none' => get_string('noknowledgebases', 'mod_fredkisync'),
-                    'loadfailed' => get_string('knowledgebasesloadfailed', 'mod_fredkisync'),
                     'choose' => get_string('chooseknowledgebase', 'mod_fredkisync'),
+                    'none' => get_string('noknowledgebasechosen', 'mod_fredkisync'),
+                    'selectedPrefix' => get_string('selectedknowledgebase', 'mod_fredkisync'),
+                    'selectedButton' => get_string('selectedknowledgebasebutton', 'mod_fredkisync'),
+                    'chooseButton' => get_string('selectknowledgebasebutton', 'mod_fredkisync'),
+                    'subtitle' => get_string('knowledgebase', 'mod_fredkisync'),
+                    'enterCredentials' => get_string('entercredentials', 'mod_fredkisync'),
+                    'loading' => get_string('loadingknowledgebases', 'mod_fredkisync'),
+                    'loadError' => get_string('knowledgebasesloadfailed', 'mod_fredkisync'),
+                    'loadedSuffix' => get_string('knowledgebasesloaded', 'mod_fredkisync'),
                 ],
             ]]);
         }

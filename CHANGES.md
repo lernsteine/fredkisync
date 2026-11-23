@@ -1,5 +1,10 @@
 # Changes
 
+## 1.2.2 (2026-11-23)
+
+- "Load knowledge bases" now works exactly like in FredKI® Kursdaten (mod_fredkicourseimport): the list is requested from a small JSON endpoint with session key, and knowledge bases are chosen from cards.
+- Removed the web service function mod_fredkisync_get_knowledgebases, which is no longer needed.
+
 ## 1.2.1 (2026-11-23)
 
 - Fixed: the "Load knowledge bases" button did not react. The JavaScript module is now registered under its name, the click handler is robust against re-rendered forms, and all texts are passed in directly.
