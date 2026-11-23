@@ -51,7 +51,7 @@ Once connected, the knowledge base of an activity is locked to prevent accidenta
 
 ## Support
 
-- Issues: <https://github.com/lernsteine/moodle-mod_fredkisync/issues>
+- Issues: <https://github.com/lernsteine/fredkisync/issues>
 - Website: <https://fredki.com>
 
 ## License
