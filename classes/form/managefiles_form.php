@@ -21,6 +21,7 @@
  * @copyright  2026 Ralf Hagemeister, LERNSTEINE <https://lernsteine.com>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_fredkisync\form;
 
 use moodleform;
@@ -29,7 +30,9 @@ use moodleform;
  * File manager form.
  */
 class managefiles_form extends moodleform {
-    /** Defines form fields. */
+    /**
+     * Defines the form fields.
+     */
     public function definition(): void {
         $mform = $this->_form;
         $options = $this->_customdata['fileoptions'];

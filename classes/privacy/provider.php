@@ -21,6 +21,7 @@
  * @copyright  2026 Ralf Hagemeister, LERNSTEINE <https://lernsteine.com>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_fredkisync\privacy;
 
 use core_privacy\local\metadata\collection;
@@ -35,10 +36,9 @@ use core_privacy\local\request\writer;
  * Describes and manages personal data used by FredKI® Sync.
  */
 class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\metadata\external_location,
-        \core_privacy\local\request\plugin\provider,
-        \core_privacy\local\request\core_userlist_provider {
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Describes the stored and transferred personal data.
      *

@@ -21,6 +21,7 @@
  * @copyright  2026 Ralf Hagemeister, LERNSTEINE <https://lernsteine.com>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_fredkisync\local;
 
 use mod_fredkisync\task\sync_activity;
@@ -66,7 +67,7 @@ class immediate_sync_service {
                         manual_sync_service::delete_record($activity, $record, $userid);
                     }
                 } catch (api_exception $exception) {
-                    // manual_sync_service has already stored the retry state.
+                    // The manual sync service has already stored the retry state.
                     if ($exception->is_transient()) {
                         $requiresretry = true;
                         $freshretry = $DB->get_record(

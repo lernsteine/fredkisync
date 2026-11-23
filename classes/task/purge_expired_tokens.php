@@ -21,6 +21,7 @@
  * @copyright  2026 Ralf Hagemeister, LERNSTEINE <https://lernsteine.com>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_fredkisync\task;
 
 use core\task\scheduled_task;
@@ -30,12 +31,18 @@ use mod_fredkisync\local\token_manager;
  * Removes locally stored expired tokens.
  */
 class purge_expired_tokens extends scheduled_task {
-    /** @return string Task name. */
+    /**
+     * Returns the task name.
+     *
+     * @return string
+     */
     public function get_name(): string {
         return get_string('taskpurgeexpiredtokens', 'mod_fredkisync');
     }
 
-    /** Executes the task. */
+    /**
+     * Executes the task.
+     */
     public function execute(): void {
         token_manager::purge_expired();
     }

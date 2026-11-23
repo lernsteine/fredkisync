@@ -21,7 +21,6 @@
  * @copyright  2026 Ralf Hagemeister, LERNSTEINE <https://lernsteine.com>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Upgrades the FredKI® Sync database schema.
@@ -82,7 +81,7 @@ function xmldb_fredkisync_upgrade(int $oldversion): bool {
             ['activityid', 'pathnamehash']
         );
 
-        // pathnamehash is part of a unique index. XMLDB requires the index to be
+        // The pathnamehash field is part of a unique index. XMLDB requires the index to be
         // removed before changing the field default and restored afterwards.
         if ($dbman->index_exists($maptable, $pathnameindex)) {
             $dbman->drop_index($maptable, $pathnameindex);
