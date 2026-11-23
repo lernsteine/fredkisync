@@ -1,5 +1,9 @@
 # Changes
 
+## 1.2.4 (2026-11-23)
+
+- The activity page shows an info bar like FredKI® Kursdaten: knowledge base, ID and the user who authorised the connection (visible to trainers).
+
 ## 1.2.3 (2026-11-23)
 
 - Removed the duplicate note on supported file types below the file manager (Moodle already lists the accepted types).

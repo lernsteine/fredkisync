@@ -50,10 +50,32 @@ if (empty($activity->knowledgeid)) {
     if ($canmanage) {
         echo $OUTPUT->notification(get_string('notconnectedinfo', 'mod_fredkisync'), 'warning');
     }
-} else {
-    $summary = get_string('knowledgebase', 'mod_fredkisync') . ': ' .
-        s($activity->knowledgebasename ?: $activity->knowledgeid);
-    echo html_writer::div($summary, 'fredkisync-knowledge-summary');
+} else if ($canmanage) {
+    // The user whose FredKI® authorisation is used for this activity (most recent login).
+    $authrecords = $DB->get_records(
+        'fredkisync_userauth',
+        ['fredkisyncid' => $activity->id],
+        'timemodified DESC',
+        'id, userid',
+        0,
+        1
+    );
+    $authrecord = reset($authrecords);
+    $authuser = $authrecord ? core_user::get_user((int)$authrecord->userid) : null;
+    $sep = ' <span class="fredki-meta-sep">•</span> ';
+    echo html_writer::div(
+        html_writer::div(
+            '<span class="fredki-meta-label">' . get_string('knowledgebase', 'mod_fredkisync') . ':</span> ' .
+            '<span class="fredki-meta-main">' . s($activity->knowledgebasename ?: '-') . '</span>' .
+            $sep .
+            '<span class="fredki-meta-id">ID: ' . s($activity->knowledgeid) . '</span>' .
+            $sep .
+            '<span class="fredki-meta-author">' . get_string('authorizedby', 'mod_fredkisync') . ': ' .
+            s($authuser ? fullname($authuser) : '-') . '</span>',
+            'fredki-summary-inline'
+        ),
+        'fredki-summary'
+    );
 }
 
 if ($canmanage) {

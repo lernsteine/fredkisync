@@ -23,6 +23,7 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['authorizedby'] = 'Authorized by';
 $string['availableknowledgebases'] = 'Knowledge base';
 $string['baseurl'] = 'FredKI® base URL';
 $string['baseurl_desc'] = 'HTTPS endpoint of the external FredKI® service. Selected files and their Moodle context are transferred to this service.';

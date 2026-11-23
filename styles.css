@@ -6,14 +6,33 @@
     margin: 0.75rem 0 1.25rem;
 }
 
-.path-mod-fredkisync .fredkisync-knowledge-summary {
-    margin: 0.75rem 0 1.25rem;
-    padding: 0.6rem 0.9rem;
-    border: 1px solid #d9e1e8;
-    border-left: 3px solid #8aa6b8;
-    border-radius: 0.375rem;
-    background-color: #f7f9fb;
-    color: #334155;
+.path-mod-fredkisync .fredki-summary {
+    margin-bottom: 18px;
+}
+
+.path-mod-fredkisync .fredki-summary-inline {
+    margin: 8px 0 14px;
+    padding: 10px 14px;
+    background: #f5f7fa;
+    border: 1px solid #e1e7f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    color: #1f2b3d;
+}
+
+.path-mod-fredkisync .fredki-meta-label,
+.path-mod-fredkisync .fredki-meta-main,
+.path-mod-fredkisync .fredki-meta-id,
+.path-mod-fredkisync .fredki-meta-author {
+    color: #1f2b3d;
+}
+
+.path-mod-fredkisync .fredki-meta-sep {
+    color: #9aa7b8;
 }
 
 .fredki-kb-picker {
