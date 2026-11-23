@@ -36,7 +36,6 @@ class managefiles_form extends moodleform {
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
         $mform->addElement('filemanager', 'files_filemanager', get_string('files', 'mod_fredkisync'), null, $options);
-        $mform->addElement('static', 'supportedfiletypes', '', get_string('supportedfiletypes', 'mod_fredkisync'));
         $this->add_action_buttons(true, get_string('savechanges'));
     }
 }

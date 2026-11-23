@@ -109,7 +109,6 @@ $string['status_deleted'] = 'Removal pending';
 $string['status_error'] = 'Error';
 $string['status_pending'] = 'Pending';
 $string['status_synced'] = 'Synchronised';
-$string['supportedfiletypes'] = 'Supported file types: PDF, DOCX, TXT, Markdown, HTML and CSV. ZIP archives are not supported.';
 $string['synccompletedimmediately'] = 'Files saved and synchronised with FredKI®: {$a->synced} uploaded, {$a->deleted} removed.';
 $string['synccompletedwitherrors'] = 'Files saved. {$a->synced} uploaded and {$a->deleted} removed; {$a->errors} item(s) could not be synchronised. See the status table for details.';
 $string['synccompletedwithretry'] = 'Files saved. {$a->synced} uploaded and {$a->deleted} removed immediately; {$a->queued} item(s) will be retried automatically.';

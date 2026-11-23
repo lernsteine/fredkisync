@@ -1,5 +1,9 @@
 # Changes
 
+## 1.2.3 (2026-11-23)
+
+- Removed the duplicate note on supported file types below the file manager (Moodle already lists the accepted types).
+
 ## 1.2.2 (2026-11-23)
 
 - "Load knowledge bases" now works exactly like in FredKI® Kursdaten (mod_fredkicourseimport): the list is requested from a small JSON endpoint with session key, and knowledge bases are chosen from cards.
