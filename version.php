@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_fredkisync';
-$plugin->version = 2026112304;
+$plugin->version = 2026112305;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 503];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.2.4';
+$plugin->release = '1.2.5';

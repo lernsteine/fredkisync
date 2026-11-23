@@ -1,5 +1,11 @@
 # Changes
 
+## 1.2.5 (2026-11-23)
+
+- Fixed: the privacy provider declared a non-existent interface, which broke data export and deletion requests.
+- Coding style fixes; Moodle Plugin CI passes on Moodle 4.5 to 5.3.
+- GitHub Actions: Moodle Plugin CI and grunt AMD build.
+
 ## 1.2.4 (2026-11-23)
 
 - The activity page shows an info bar like FredKI® Kursdaten: knowledge base, ID and the user who authorised the connection (visible to trainers).
