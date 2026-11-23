@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/fredkisync/db" VERSION="2026072903" COMMENT="Install XML for mod_fredkisync"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+    <TABLES>
+        <TABLE NAME="fredkisync" COMMENT="Main table for FredKI sync activities">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true"/>
+                <FIELD NAME="intro" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="knowledgeid" TYPE="char" LENGTH="64" NOTNULL="true"/>
+                <FIELD NAME="knowledgebasename" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="createknowledge" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="newknowledgebasename" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="workspace" TYPE="char" LENGTH="64" NOTNULL="true" DEFAULT="default"/>
+                <FIELD NAME="syncenabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="course_fk" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="course_ix" UNIQUE="false" FIELDS="course"/>
+            </INDEXES>
+        </TABLE>
+
+        <TABLE NAME="fredkisync_map" COMMENT="Maps Moodle files to FredKI documents">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="activityid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="pathnamehash" TYPE="char" LENGTH="40" NOTNULL="true"/>
+                <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true"/>
+                <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="true"/>
+                <FIELD NAME="filesize" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="fredki_document_id" TYPE="char" LENGTH="64" NOTNULL="false"/>
+                <FIELD NAME="fredki_source_file_id" TYPE="char" LENGTH="64" NOTNULL="false"/>
+                <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending"/>
+                <FIELD NAME="lasterror" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="attempts" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="lastattempt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="nextruntime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="syncuserid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="timesynced" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="activity_fk" TYPE="foreign" FIELDS="activityid" REFTABLE="fredkisync" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cmid_ix" UNIQUE="false" FIELDS="cmid"/>
+                <INDEX NAME="activityid_ix" UNIQUE="false" FIELDS="activityid"/>
+                <INDEX NAME="pathnamehash_uix" UNIQUE="true" FIELDS="activityid, pathnamehash"/>
+                <INDEX NAME="status_ix" UNIQUE="false" FIELDS="status"/>
+                <INDEX NAME="statusruntime_ix" UNIQUE="false" FIELDS="status, nextruntime"/>
+            </INDEXES>
+        </TABLE>
+
+        <TABLE NAME="fredkisync_userauth" COMMENT="FredKI authentication tokens per Moodle user and activity">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="fredkisyncid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="fredkiusername" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="token" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="tokenexpires" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="lastused" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+                <KEY NAME="fredkisyncid_fk" TYPE="foreign" FIELDS="fredkisyncid" REFTABLE="fredkisync" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="useractivity_uix" UNIQUE="true" FIELDS="userid, fredkisyncid"/>
+                <INDEX NAME="fredkisyncid_ix" UNIQUE="false" FIELDS="fredkisyncid"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>
