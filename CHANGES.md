@@ -1,5 +1,9 @@
 # Changes
 
+## 1.2.6 (2026-11-24)
+
+- The settings show where to get a FredKI® server: hosted by lernsteine.com or self-hosted from GitHub.
+
 ## 1.2.5 (2026-11-23)
 
 - Fixed: the privacy provider declared a non-existent interface, which broke data export and deletion requests.
